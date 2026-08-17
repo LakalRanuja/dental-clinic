@@ -4,13 +4,12 @@
 
 package com.mycompany.dental.clinic;
 
-/**
- *
- * @author User
- */
+import com.mycompany.dental.clinic.view.LoginView;
+import javafx.application.Application;
+
 public class DentalClinic {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        Application.launch(LoginView.class, args);
     }
 }
