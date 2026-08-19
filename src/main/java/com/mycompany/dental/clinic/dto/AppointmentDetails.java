@@ -19,9 +19,12 @@ public class AppointmentDetails {
     private final String treatmentType;
     private final LocalDate appointmentDate;
     private final LocalTime appointmentTime;
+    private final String status;
+    private final String paymentStatus;
 
     public AppointmentDetails(int appointmentNo, String patientName, String address, String contactNumber,
-            String dentistName, String treatmentType, LocalDate appointmentDate, LocalTime appointmentTime) {
+            String dentistName, String treatmentType, LocalDate appointmentDate, LocalTime appointmentTime,
+            String status, String paymentStatus) {
         this.appointmentNo = appointmentNo;
         this.patientName = patientName;
         this.address = address;
@@ -30,6 +33,8 @@ public class AppointmentDetails {
         this.treatmentType = treatmentType;
         this.appointmentDate = appointmentDate;
         this.appointmentTime = appointmentTime;
+        this.status = status;
+        this.paymentStatus = paymentStatus;
     }
 
     public String getAppointmentNumber() {
@@ -62,6 +67,14 @@ public class AppointmentDetails {
 
     public String getAppointmentTime() {
         return String.format("%02d:%02d", appointmentTime.getHour(), appointmentTime.getMinute());
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getPaymentStatus() {
+        return paymentStatus;
     }
 
     public static String formatAppointmentNumber(int appointmentNo) {

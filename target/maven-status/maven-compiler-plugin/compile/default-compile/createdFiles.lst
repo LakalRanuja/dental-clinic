@@ -1,8 +1,10 @@
 com\mycompany\dental\clinic\controller\DentistController.class
 com\mycompany\dental\clinic\dao\PatientDao.class
 com\mycompany\dental\clinic\controller\PaymentController.class
+com\mycompany\dental\clinic\dao\PaymentDao.class
 com\mycompany\dental\clinic\model\Payment.class
 com\mycompany\dental\clinic\view\DashboardView.class
+com\mycompany\dental\clinic\view\PendingAppointment.class
 com\mycompany\dental\clinic\view\PatientRegisterView.class
 com\mycompany\dental\clinic\dao\UserDao.class
 com\mycompany\dental\clinic\dto\AppointmentSummary.class
@@ -15,6 +17,7 @@ com\mycompany\dental\clinic\controller\UserController.class
 com\mycompany\dental\clinic\model\User.class
 com\mycompany\dental\clinic\db\DBConnection.class
 com\mycompany\dental\clinic\model\Patient.class
+com\mycompany\dental\clinic\view\DentistRegisterView$2.class
 com\mycompany\dental\clinic\controller\DashboardController.class
 com\mycompany\dental\clinic\view\AppointmentRegisterView.class
 com\mycompany\dental\clinic\dao\DentistDao.class
@@ -29,6 +32,7 @@ com\mycompany\dental\clinic\view\LoginView.class
 com\mycompany\dental\clinic\view\AppointmentRegisterView$1.class
 com\mycompany\dental\clinic\DentalClinic.class
 com\mycompany\dental\clinic\view\AppointmentSearchView.class
+com\mycompany\dental\clinic\view\PaymentRegisterView.class
 com\mycompany\dental\clinic\model\Dentist.class
 com\mycompany\dental\clinic\view\UserRegisterView.class
 com\mycompany\dental\clinic\dto\DashboardStats.class

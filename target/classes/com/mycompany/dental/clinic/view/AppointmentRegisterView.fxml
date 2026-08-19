@@ -52,8 +52,12 @@
                         <Spinner fx:id="minuteSpinner" editable="true" prefWidth="80.0" />
                     </children>
                 </HBox>
+
+                <Label text="Status" GridPane.rowIndex="7" />
+                <ComboBox fx:id="statusCombo" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="7" />
             </children>
          <rowConstraints>
+            <RowConstraints />
             <RowConstraints />
             <RowConstraints />
             <RowConstraints />
@@ -66,7 +70,8 @@
 
         <HBox spacing="12.0">
             <children>
-                <Button onAction="#handleRegister" prefHeight="44.0" prefWidth="262.0" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: #0d9488; -fx-text-fill: white; -fx-background-radius: 8;" text="Register Appointment" />
+                <Button fx:id="registerButton" onAction="#handleRegister" prefHeight="44.0" prefWidth="262.0" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: #0d9488; -fx-text-fill: white; -fx-background-radius: 8;" text="Register Appointment" />
+                <Button fx:id="makePaymentButton" managed="false" onAction="#handleMakePayment" prefHeight="44.0" prefWidth="262.0" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: #2563eb; -fx-text-fill: white; -fx-background-radius: 8;" text="Make Payment" visible="false" />
                 <Button onAction="#handleClose" prefHeight="43.0" prefWidth="230.0" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: red; -fx-text-fill: white; -fx-background-radius: 8;" text="Close" />
             </children>
         </HBox>

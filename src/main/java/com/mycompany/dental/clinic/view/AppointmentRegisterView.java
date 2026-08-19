@@ -6,11 +6,13 @@ import com.mycompany.dental.clinic.dto.AppointmentDetails;
 import com.mycompany.dental.clinic.model.Dentist;
 import com.mycompany.dental.clinic.model.TreatmentType;
 import com.mycompany.dental.clinic.model.User;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListCell;
@@ -25,6 +27,9 @@ import java.time.LocalTime;
 
 /** FXML code-behind for AppointmentRegisterView.fxml. */
 public class AppointmentRegisterView {
+
+    private static final String STATUS_SCHEDULED = "Scheduled";
+    private static final String STATUS_ARRIVED = "Arrived";
 
     private final AppoinmentController appointmentController = new AppoinmentController();
     private final DentistController dentistController = new DentistController();
@@ -49,6 +54,12 @@ public class AppointmentRegisterView {
     private Spinner<Integer> hourSpinner;
     @FXML
     private Spinner<Integer> minuteSpinner;
+    @FXML
+    private ComboBox<String> statusCombo;
+    @FXML
+    private Button registerButton;
+    @FXML
+    private Button makePaymentButton;
 
     public static void open(Stage stage, User user, Runnable onRegistered) throws IOException {
         FXMLLoader loader = new FXMLLoader(AppointmentRegisterView.class.getResource("AppointmentRegisterView.fxml"));
@@ -69,6 +80,20 @@ public class AppointmentRegisterView {
         minuteSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 55, 0, 5));
         setUpTreatmentCombo();
         setUpDentistCombo();
+        setUpStatusCombo();
+    }
+
+    private void setUpStatusCombo() {
+        statusCombo.setItems(FXCollections.observableArrayList(STATUS_SCHEDULED, STATUS_ARRIVED));
+        statusCombo.setValue(STATUS_SCHEDULED);
+
+        statusCombo.valueProperty().addListener((obs, oldStatus, newStatus) -> {
+            boolean arrived = STATUS_ARRIVED.equals(newStatus);
+            registerButton.setVisible(!arrived);
+            registerButton.setManaged(!arrived);
+            makePaymentButton.setVisible(arrived);
+            makePaymentButton.setManaged(arrived);
+        });
     }
 
     private void setUpDentistCombo() {
@@ -173,38 +198,17 @@ public class AppointmentRegisterView {
 
     @FXML
     private void handleRegister() {
-        String patientName = patientNameField.getText().trim();
-        String address = addressField.getText().trim();
-        String contactNumber = contactNumberField.getText().trim();
-        Dentist dentist = dentistCombo.getValue();
-        TreatmentType treatment = treatmentCombo.getValue();
-
-        if (patientName.isEmpty() || address.isEmpty() || contactNumber.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Missing details", "Fill in patient name, address and contact number.");
+        PendingAppointment pending = validateForm(STATUS_SCHEDULED);
+        if (pending == null) {
             return;
         }
-        if (treatment == null) {
-            showAlert(Alert.AlertType.WARNING, "Select a treatment", "Choose a treatment type.");
-            return;
-        }
-        if (dentist == null) {
-            showAlert(Alert.AlertType.WARNING, "Select a dentist", "Search and pick a dentist from the list.");
-            return;
-        }
-        if (datePicker.getValue() == null) {
-            showAlert(Alert.AlertType.WARNING, "Pick a date", "Choose an appointment date.");
-            return;
-        }
-
-        LocalTime time = LocalTime.of(hourSpinner.getValue(), minuteSpinner.getValue());
 
         try {
             AppointmentDetails created = appointmentController.register(
-                    patientName, address, contactNumber,
-                    dentist.getDentistId(), treatment.getTreatmentId(),
-                    datePicker.getValue().toString(),
-                    String.format("%02d:%02d", time.getHour(), time.getMinute()),
-                    user.getUserId()
+                    pending.getPatientName(), pending.getAddress(), pending.getContactNumber(),
+                    pending.getDentistId(), pending.getTreatmentId(),
+                    pending.getAppointmentDate(), pending.getAppointmentTime(),
+                    pending.getUserId(), pending.getStatus()
             );
 
             if (onRegistered != null) {
@@ -213,17 +217,80 @@ public class AppointmentRegisterView {
 
             showAlert(Alert.AlertType.INFORMATION, "Appointment Registered",
                     "Appointment number: " + created.getAppointmentNumber());
-
-            patientNameField.clear();
-            addressField.clear();
-            contactNumberField.clear();
-            dentistCombo.getEditor().clear();
-            dentistCombo.setValue(null);
-            treatmentCombo.setValue(null);
-            datePicker.setValue(null);
+            clearForm();
         } catch (RuntimeException e) {
             showAlert(Alert.AlertType.ERROR, "Failed to register appointment", "Check the details and try again.");
         }
+    }
+
+    @FXML
+    private void handleMakePayment() {
+        PendingAppointment pending = validateForm(STATUS_ARRIVED);
+        if (pending == null) {
+            return;
+        }
+
+        // Deliberately NOT registering the appointment here — for the Arrived flow, the appointment
+        // row must only be created once payment actually completes (see PaymentRegisterView), so an
+        // abandoned/cancelled payment screen leaves no trace in the appointments table.
+        Dentist dentist = dentistCombo.getValue();
+        TreatmentType treatment = treatmentCombo.getValue();
+
+        try {
+            PaymentRegisterView.open(new Stage(), pending, dentist.getConsultationFee(), treatment.getBaseCost(),
+                    onRegistered);
+            stage.close();
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "UI error", "Could not open the payment screen.");
+        }
+    }
+
+    /** Validates the form and returns the not-yet-saved details, or null (with an alert already shown) if invalid. */
+    private PendingAppointment validateForm(String status) {
+        String patientName = patientNameField.getText().trim();
+        String address = addressField.getText().trim();
+        String contactNumber = contactNumberField.getText().trim();
+        Dentist dentist = dentistCombo.getValue();
+        TreatmentType treatment = treatmentCombo.getValue();
+
+        if (patientName.isEmpty() || address.isEmpty() || contactNumber.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Missing details", "Fill in patient name, address and contact number.");
+            return null;
+        }
+        if (treatment == null) {
+            showAlert(Alert.AlertType.WARNING, "Select a treatment", "Choose a treatment type.");
+            return null;
+        }
+        if (dentist == null) {
+            showAlert(Alert.AlertType.WARNING, "Select a dentist", "Search and pick a dentist from the list.");
+            return null;
+        }
+        if (datePicker.getValue() == null) {
+            showAlert(Alert.AlertType.WARNING, "Pick a date", "Choose an appointment date.");
+            return null;
+        }
+
+        LocalTime time = LocalTime.of(hourSpinner.getValue(), minuteSpinner.getValue());
+
+        return new PendingAppointment(
+                patientName, address, contactNumber,
+                dentist.getDentistId(), treatment.getTreatmentId(),
+                datePicker.getValue().toString(),
+                String.format("%02d:%02d", time.getHour(), time.getMinute()),
+                user.getUserId(),
+                status
+        );
+    }
+
+    private void clearForm() {
+        patientNameField.clear();
+        addressField.clear();
+        contactNumberField.clear();
+        dentistCombo.getEditor().clear();
+        dentistCombo.setValue(null);
+        treatmentCombo.setValue(null);
+        datePicker.setValue(null);
+        statusCombo.setValue(STATUS_SCHEDULED);
     }
 
     @FXML

@@ -18,13 +18,14 @@ public class AppoinmentController {
     private final TreatmentTypeDao treatmentTypeDao = new TreatmentTypeDao();
 
     public AppointmentDetails register(String patientName, String address, String contactNumber,
-            int dentistId, int treatmentId, String appointmentDate, String appointmentTime, int userId) {
+            int dentistId, int treatmentId, String appointmentDate, String appointmentTime, int userId,
+            String status) {
 
         int patientId = patientDao.findOrCreate(patientName, address, contactNumber);
 
         int appointmentNo = appointmentDao.insert(
                 patientId, dentistId, treatmentId, userId,
-                LocalDate.parse(appointmentDate), LocalTime.parse(appointmentTime)
+                LocalDate.parse(appointmentDate), LocalTime.parse(appointmentTime), status
         );
 
         return appointmentDao.findByAppointmentNo(appointmentNo);

@@ -41,6 +41,10 @@ public class AppointmentSearchView {
     private Label appointmentDateValue;
     @FXML
     private Label appointmentTimeValue;
+    @FXML
+    private Label statusValue;
+    @FXML
+    private Label paymentStatusValue;
 
     public static void open(Stage stage) throws IOException {
         FXMLLoader loader = new FXMLLoader(AppointmentSearchView.class.getResource("AppointmentSearchView.fxml"));
@@ -84,6 +88,8 @@ public class AppointmentSearchView {
         treatmentTypeValue.setText(details.getTreatmentType());
         appointmentDateValue.setText(details.getAppointmentDate());
         appointmentTimeValue.setText(details.getAppointmentTime());
+        statusValue.setText(details.getStatus());
+        paymentStatusValue.setText(details.getPaymentStatus());
 
         resultGrid.setVisible(true);
         resultGrid.setManaged(true);

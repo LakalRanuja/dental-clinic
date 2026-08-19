@@ -19,7 +19,7 @@ import java.util.List;
 public class AppointmentDao {
 
     public int insert(int patientId, int dentistId, int treatmentId, int userId,
-            LocalDate appointmentDate, LocalTime appointmentTime) {
+            LocalDate appointmentDate, LocalTime appointmentTime, String status) {
         String sql = "INSERT INTO appointments "
                 + "(patient_id, dentist_id, treatment_id, user_id, appointment_date, appointment_time, status) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -33,7 +33,7 @@ public class AppointmentDao {
             statement.setInt(4, userId);
             statement.setDate(5, Date.valueOf(appointmentDate));
             statement.setTime(6, Time.valueOf(appointmentTime));
-            statement.setString(7, "Scheduled");
+            statement.setString(7, status);
             statement.executeUpdate();
 
             try (ResultSet keys = statement.getGeneratedKeys()) {
@@ -45,9 +45,24 @@ public class AppointmentDao {
         }
     }
 
+    public void updatePaymentStatus(int appointmentNo, String paymentStatus) {
+        String sql = "UPDATE appointments SET payment_status = ? WHERE appointment_no = ?";
+
+        try (Connection connection = DBConnection.getInstance().getConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, paymentStatus);
+            statement.setInt(2, appointmentNo);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update payment status", e);
+        }
+    }
+
     public AppointmentDetails findByAppointmentNo(int appointmentNo) {
         String sql = "SELECT a.appointment_no, p.name AS patient_name, p.address, p.contact_no, "
-                + "d.name AS dentist_name, t.treatment_name, a.appointment_date, a.appointment_time "
+                + "d.name AS dentist_name, t.treatment_name, a.appointment_date, a.appointment_time, "
+                + "a.status, a.payment_status "
                 + "FROM appointments a "
                 + "JOIN patients p ON a.patient_id = p.patient_id "
                 + "JOIN dentists d ON a.dentist_id = d.dentist_id "
@@ -72,7 +87,9 @@ public class AppointmentDao {
                         rs.getString("dentist_name"),
                         rs.getString("treatment_name"),
                         rs.getDate("appointment_date").toLocalDate(),
-                        rs.getTime("appointment_time").toLocalTime()
+                        rs.getTime("appointment_time").toLocalTime(),
+                        rs.getString("status"),
+                        rs.getString("payment_status")
                 );
             }
         } catch (SQLException e) {
@@ -82,7 +99,7 @@ public class AppointmentDao {
 
     public List<AppointmentSummary> findAllSummaries() {
         String sql = "SELECT a.appointment_no, a.patient_id, d.name AS dentist_name, t.treatment_name, "
-                + "a.appointment_date, a.appointment_time, u.full_name AS booked_by "
+                + "a.appointment_date, a.appointment_time, u.full_name AS booked_by, a.status, a.payment_status "
                 + "FROM appointments a "
                 + "JOIN dentists d ON a.dentist_id = d.dentist_id "
                 + "JOIN treatment_types t ON a.treatment_id = t.treatment_id "
@@ -103,7 +120,9 @@ public class AppointmentDao {
                         rs.getString("treatment_name"),
                         rs.getDate("appointment_date").toLocalDate(),
                         rs.getTime("appointment_time").toLocalTime(),
-                        rs.getString("booked_by")
+                        rs.getString("booked_by"),
+                        rs.getString("status"),
+                        rs.getString("payment_status")
                 ));
             }
         } catch (SQLException e) {

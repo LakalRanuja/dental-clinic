@@ -62,6 +62,14 @@
                 <Label style="-fx-font-weight: bold; -fx-text-fill: #666; -fx-font-size: 11px;"
                        text="Appointment Time" GridPane.rowIndex="7" />
                 <Label fx:id="appointmentTimeValue" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+
+                <Label style="-fx-font-weight: bold; -fx-text-fill: #666; -fx-font-size: 11px;" text="Status"
+                       GridPane.rowIndex="8" />
+                <Label fx:id="statusValue" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+
+                <Label style="-fx-font-weight: bold; -fx-text-fill: #666; -fx-font-size: 11px;" text="Payment Status"
+                       GridPane.rowIndex="9" />
+                <Label fx:id="paymentStatusValue" GridPane.columnIndex="1" GridPane.rowIndex="9" />
             </children>
         </GridPane>
     </children>

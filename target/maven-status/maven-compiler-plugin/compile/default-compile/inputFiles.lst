@@ -8,6 +8,7 @@ D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\dao
 D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\dao\DashboardDao.java
 D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\dao\DentistDao.java
 D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\dao\PatientDao.java
+D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\dao\PaymentDao.java
 D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\dao\TreatmentTypeDao.java
 D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\dao\UserDao.java
 D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\db\DBConnection.java
@@ -27,4 +28,6 @@ D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\vie
 D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\view\DentistRegisterView.java
 D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\view\LoginView.java
 D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\view\PatientRegisterView.java
+D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\view\PaymentRegisterView.java
+D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\view\PendingAppointment.java
 D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\view\UserRegisterView.java

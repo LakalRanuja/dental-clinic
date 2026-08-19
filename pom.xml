@@ -18,9 +18,9 @@
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
+            <artifactId>javafx-fxml</artifactId>
             <version>21.0.2</version>
-            <classifier>win</classifier>
+            <type>jar</type>
         </dependency>
     </dependencies>
     <properties>

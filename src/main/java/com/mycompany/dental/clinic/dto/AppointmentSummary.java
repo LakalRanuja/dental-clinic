@@ -17,9 +17,12 @@ public class AppointmentSummary {
     private final LocalDate appointmentDate;
     private final LocalTime appointmentTime;
     private final String bookedBy;
+    private final String status;
+    private final String paymentStatus;
 
     public AppointmentSummary(int appointmentNo, int patientId, String dentistName, String treatmentType,
-            LocalDate appointmentDate, LocalTime appointmentTime, String bookedBy) {
+            LocalDate appointmentDate, LocalTime appointmentTime, String bookedBy, String status,
+            String paymentStatus) {
         this.appointmentNo = appointmentNo;
         this.patientId = patientId;
         this.dentistName = dentistName;
@@ -27,6 +30,8 @@ public class AppointmentSummary {
         this.appointmentDate = appointmentDate;
         this.appointmentTime = appointmentTime;
         this.bookedBy = bookedBy;
+        this.status = status;
+        this.paymentStatus = paymentStatus;
     }
 
     public String getAppointmentNumber() {
@@ -55,5 +60,13 @@ public class AppointmentSummary {
 
     public String getBookedBy() {
         return bookedBy;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getPaymentStatus() {
+        return paymentStatus;
     }
 }

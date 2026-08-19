@@ -11,6 +11,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
@@ -18,6 +19,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -42,7 +44,7 @@ public class DentistRegisterView {
     @FXML
     private TextField nameField;
     @FXML
-    private TextField specializationField;
+    private ComboBox<TreatmentType> specializationCombo;
     @FXML
     private TextField contactNumberField;
     @FXML
@@ -73,8 +75,30 @@ public class DentistRegisterView {
         });
         treatmentsList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
+        specializationCombo.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(TreatmentType type) {
+                return type == null ? "" : type.getTreatmentName();
+            }
+
+            @Override
+            public TreatmentType fromString(String string) {
+                return null;
+            }
+        });
+
+        // Picking a specialization also selects it in the treatments list below, so registering/updating
+        // this dentist always creates the matching dentist_treatment_types link — not just a text label.
+        specializationCombo.valueProperty().addListener((obs, oldType, newType) -> {
+            if (newType != null) {
+                treatmentsList.getSelectionModel().select(newType);
+            }
+        });
+
         try {
-            treatmentsList.setItems(FXCollections.observableArrayList(appointmentController.listTreatmentTypes()));
+            List<TreatmentType> treatmentTypes = appointmentController.listTreatmentTypes();
+            specializationCombo.setItems(FXCollections.observableArrayList(treatmentTypes));
+            treatmentsList.setItems(FXCollections.observableArrayList(treatmentTypes));
         } catch (RuntimeException e) {
             new Alert(Alert.AlertType.ERROR, "Could not load treatment types.").showAndWait();
         }
@@ -97,7 +121,6 @@ public class DentistRegisterView {
     private void startEditing(Dentist dentist) {
         editingDentist = dentist;
         nameField.setText(dentist.getName());
-        specializationField.setText(dentist.getSpecialization());
         contactNumberField.setText(dentist.getContactNumber());
         consultationFeeField.setText(dentist.getConsultationFee() == null
                 ? "" : dentist.getConsultationFee().toPlainString());
@@ -114,6 +137,13 @@ public class DentistRegisterView {
         } catch (RuntimeException e) {
             new Alert(Alert.AlertType.ERROR, "Could not load this dentist's current treatments.").showAndWait();
         }
+
+        // Match the stored specialization text back to a treatment type, if it still corresponds to one
+        // (older records may hold free text that no longer matches any treatment name).
+        specializationCombo.setValue(specializationCombo.getItems().stream()
+                .filter(type -> type.getTreatmentName().equals(dentist.getSpecialization()))
+                .findFirst()
+                .orElse(null));
 
         registerButton.setText("Update Dentist");
         formSection.setVisible(true);
@@ -138,7 +168,7 @@ public class DentistRegisterView {
     @FXML
     private void handleRegister() {
         String name = nameField.getText().trim();
-        String specialization = specializationField.getText().trim();
+        TreatmentType specialization = specializationCombo.getValue();
         String contactNumber = contactNumberField.getText().trim();
         String feeText = consultationFeeField.getText().trim();
 
@@ -156,6 +186,8 @@ public class DentistRegisterView {
             return;
         }
 
+        String specializationName = specialization == null ? null : specialization.getTreatmentName();
+
         List<Integer> treatmentIds = treatmentsList.getSelectionModel().getSelectedItems().stream()
                 .map(TreatmentType::getTreatmentId)
                 .collect(Collectors.toList());
@@ -164,9 +196,10 @@ public class DentistRegisterView {
 
         try {
             Dentist result = isUpdate
-                    ? dentistController.update(editingDentist.getDentistId(), name, specialization, contactNumber,
-                            consultationFee, treatmentIds)
-                    : dentistController.register(name, specialization, contactNumber, consultationFee, treatmentIds);
+                    ? dentistController.update(editingDentist.getDentistId(), name, specializationName,
+                            contactNumber, consultationFee, treatmentIds)
+                    : dentistController.register(name, specializationName, contactNumber, consultationFee,
+                            treatmentIds);
 
             fetchDentists();
             closeForm();
@@ -190,7 +223,7 @@ public class DentistRegisterView {
 
     private void clearForm() {
         nameField.clear();
-        specializationField.clear();
+        specializationCombo.setValue(null);
         contactNumberField.clear();
         consultationFeeField.clear();
         treatmentsList.getSelectionModel().clearSelection();

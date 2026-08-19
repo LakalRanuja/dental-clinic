@@ -153,6 +153,16 @@
                                         <PropertyValueFactory property="bookedBy" />
                                     </cellValueFactory>
                                 </TableColumn>
+                                <TableColumn text="Status">
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="status" />
+                                    </cellValueFactory>
+                                </TableColumn>
+                                <TableColumn text="Payment Status">
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="paymentStatus" />
+                                    </cellValueFactory>
+                                </TableColumn>
                             </columns>
                         </TableView>
                     </children>
