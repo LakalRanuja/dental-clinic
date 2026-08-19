@@ -1,6 +1,7 @@
 D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\controller\AppoinmentController.java
 D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\controller\DashboardController.java
 D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\controller\DentistController.java
+D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\controller\PatientController.java
 D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\controller\PaymentController.java
 D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\controller\UserController.java
 D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\dao\AppointmentDao.java
@@ -20,7 +21,10 @@ D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\mod
 D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\model\Payment.java
 D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\model\TreatmentType.java
 D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\model\User.java
-D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\server\ApiServer.java
-D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\util\JsonUtil.java
+D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\view\AppointmentRegisterView.java
+D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\view\AppointmentSearchView.java
 D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\view\DashboardView.java
+D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\view\DentistRegisterView.java
 D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\view\LoginView.java
+D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\view\PatientRegisterView.java
+D:\Netbeans Projects\dental-clinic\src\main\java\com\mycompany\dental\clinic\view\UserRegisterView.java

@@ -48,4 +48,9 @@ public class Dentist {
     public void setContactNumber(String contact_no) {
         this.contact_no = contact_no;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

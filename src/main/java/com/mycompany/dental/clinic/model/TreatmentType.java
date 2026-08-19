@@ -50,4 +50,9 @@ public class TreatmentType {
     public void setBaseCost(BigDecimal baseCost) {
         this.baseCost = baseCost;
     }
+
+    @Override
+    public String toString() {
+        return treatmentName;
+    }
 }

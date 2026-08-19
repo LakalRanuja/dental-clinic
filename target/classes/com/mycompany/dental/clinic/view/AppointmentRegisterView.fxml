@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefWidth="560.0" spacing="20.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.dental.clinic.view.AppointmentRegisterView">
+    <padding>
+        <Insets bottom="28.0" left="28.0" right="28.0" top="28.0" />
+    </padding>
+    <children>
+        <Label style="-fx-font-size: 22px; -fx-font-weight: bold;" text="Register Appointment" />
+
+        <GridPane hgap="16.0" vgap="14.0">
+            <columnConstraints>
+                <ColumnConstraints minWidth="150.0" prefWidth="150.0" />
+                <ColumnConstraints hgrow="ALWAYS" />
+            </columnConstraints>
+            <children>
+                <Label text="Patient Name" GridPane.rowIndex="0" />
+                <TextField fx:id="patientNameField" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                <Label text="Address" GridPane.rowIndex="1" />
+                <TextField fx:id="addressField" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                <Label text="Contact Number" GridPane.rowIndex="2" />
+                <TextField fx:id="contactNumberField" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                
+                <Label text="Treatment Type" GridPane.rowIndex="3" />
+                <ComboBox fx:id="treatmentCombo" maxWidth="Infinity" promptText="Select a treatment" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                <Label text="Dentist" GridPane.rowIndex="4" />
+                <ComboBox fx:id="dentistCombo" disable="true" editable="true" maxWidth="Infinity" promptText="Select a treatment first" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+                <Label text="Appointment Date" GridPane.rowIndex="5" />
+                <DatePicker fx:id="datePicker" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+                <Label text="Appointment Time" GridPane.rowIndex="6" />
+                <HBox alignment="CENTER_LEFT" spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                    <children>
+                        <Spinner fx:id="hourSpinner" editable="true" prefWidth="80.0" />
+                        <Label text=":" />
+                        <Spinner fx:id="minuteSpinner" editable="true" prefWidth="80.0" />
+                    </children>
+                </HBox>
+            </children>
+         <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+         </rowConstraints>
+        </GridPane>
+
+        <HBox spacing="12.0">
+            <children>
+                <Button onAction="#handleRegister" prefHeight="44.0" prefWidth="262.0" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: #0d9488; -fx-text-fill: white; -fx-background-radius: 8;" text="Register Appointment" />
+                <Button onAction="#handleClose" prefHeight="43.0" prefWidth="230.0" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: red; -fx-text-fill: white; -fx-background-radius: 8;" text="Close" />
+            </children>
+        </HBox>
+    </children>
+</VBox>

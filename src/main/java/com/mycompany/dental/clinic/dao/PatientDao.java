@@ -1,14 +1,57 @@
 package com.mycompany.dental.clinic.dao;
 
 import com.mycompany.dental.clinic.db.DBConnection;
+import com.mycompany.dental.clinic.model.Patient;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PatientDao {
+
+    public List<Patient> findAll() {
+        String sql = "SELECT patient_id, name, address, contact_no FROM patients ORDER BY name";
+
+        List<Patient> patients = new ArrayList<>();
+
+        try (Connection connection = DBConnection.getInstance().getConnection();
+                PreparedStatement statement = connection.prepareStatement(sql);
+                ResultSet rs = statement.executeQuery()) {
+
+            while (rs.next()) {
+                patients.add(new Patient(
+                        rs.getInt("patient_id"),
+                        rs.getString("name"),
+                        rs.getString("address"),
+                        rs.getString("contact_no")
+                ));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to list patients", e);
+        }
+
+        return patients;
+    }
+
+    public void update(int patientId, String name, String address, String contactNumber) {
+        String sql = "UPDATE patients SET name = ?, address = ?, contact_no = ? WHERE patient_id = ?";
+
+        try (Connection connection = DBConnection.getInstance().getConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, name);
+            statement.setString(2, address);
+            statement.setString(3, contactNumber);
+            statement.setInt(4, patientId);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update patient", e);
+        }
+    }
 
     /**
      * Returns the id of an existing patient matching name + contact number,

@@ -9,7 +9,28 @@ public class DentistController {
 
     private final DentistDao dentistDao = new DentistDao();
 
-    public List<Dentist> search(String query) {
-        return dentistDao.searchByName(query == null ? "" : query);
+    public List<Dentist> search(String query, int treatmentId) {
+        return dentistDao.searchByNameAndTreatment(query == null ? "" : query, treatmentId);
+    }
+
+    public List<Dentist> listAll() {
+        return dentistDao.findAll();
+    }
+
+    public Dentist register(String name, String specialization, String contactNumber, List<Integer> treatmentIds) {
+        int dentistId = dentistDao.insert(name, specialization, contactNumber);
+        dentistDao.linkTreatments(dentistId, treatmentIds);
+        return new Dentist(dentistId, name, specialization, contactNumber);
+    }
+
+    public Dentist update(int dentistId, String name, String specialization, String contactNumber,
+            List<Integer> treatmentIds) {
+        dentistDao.update(dentistId, name, specialization, contactNumber);
+        dentistDao.linkTreatments(dentistId, treatmentIds);
+        return new Dentist(dentistId, name, specialization, contactNumber);
+    }
+
+    public List<Integer> getTreatmentIdsForDentist(int dentistId) {
+        return dentistDao.findTreatmentIdsForDentist(dentistId);
     }
 }
