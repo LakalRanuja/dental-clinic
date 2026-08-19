@@ -47,6 +47,11 @@
                         <PropertyValueFactory property="contactNumber" />
                     </cellValueFactory>
                 </TableColumn>
+                <TableColumn text="Consultation Fee">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="consultationFee" />
+                    </cellValueFactory>
+                </TableColumn>
             </columns>
         </TableView>
 
@@ -75,6 +80,10 @@
                         <Label text="Contact Number" GridPane.rowIndex="2" />
                         <TextField fx:id="contactNumberField" maxWidth="Infinity" GridPane.columnIndex="1"
                                    GridPane.rowIndex="2" />
+
+                        <Label text="Consultation Fee" GridPane.rowIndex="3" />
+                        <TextField fx:id="consultationFeeField" maxWidth="Infinity" promptText="e.g. 2500.00"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="3" />
                     </children>
                 </GridPane>
 

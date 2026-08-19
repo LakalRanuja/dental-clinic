@@ -1,20 +1,25 @@
 package com.mycompany.dental.clinic.model;
 
+import java.math.BigDecimal;
+
 public class Dentist {
 
     private int dentist_id;
     private String name;
     private String specialization;
     private String contact_no;
+    private BigDecimal consultationFee;
 
     public Dentist() {
     }
 
-    public Dentist(int dentist_id, String name, String specialization, String contact_no) {
+    public Dentist(int dentist_id, String name, String specialization, String contact_no,
+            BigDecimal consultationFee) {
         this.dentist_id = dentist_id;
         this.name = name;
         this.specialization = specialization;
         this.contact_no = contact_no;
+        this.consultationFee = consultationFee;
     }
 
     public int getDentistId() {
@@ -47,6 +52,14 @@ public class Dentist {
 
     public void setContactNumber(String contact_no) {
         this.contact_no = contact_no;
+    }
+
+    public BigDecimal getConsultationFee() {
+        return consultationFee;
+    }
+
+    public void setConsultationFee(BigDecimal consultationFee) {
+        this.consultationFee = consultationFee;
     }
 
     @Override

@@ -20,6 +20,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,8 @@ public class DentistRegisterView {
     private TextField specializationField;
     @FXML
     private TextField contactNumberField;
+    @FXML
+    private TextField consultationFeeField;
     @FXML
     private ListView<TreatmentType> treatmentsList;
 
@@ -96,6 +99,8 @@ public class DentistRegisterView {
         nameField.setText(dentist.getName());
         specializationField.setText(dentist.getSpecialization());
         contactNumberField.setText(dentist.getContactNumber());
+        consultationFeeField.setText(dentist.getConsultationFee() == null
+                ? "" : dentist.getConsultationFee().toPlainString());
 
         treatmentsList.getSelectionModel().clearSelection();
         try {
@@ -135,9 +140,19 @@ public class DentistRegisterView {
         String name = nameField.getText().trim();
         String specialization = specializationField.getText().trim();
         String contactNumber = contactNumberField.getText().trim();
+        String feeText = consultationFeeField.getText().trim();
 
-        if (name.isEmpty() || contactNumber.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Missing details", "Fill in at least name and contact number.");
+        if (name.isEmpty() || contactNumber.isEmpty() || feeText.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Missing details",
+                    "Fill in at least name, contact number and consultation fee.");
+            return;
+        }
+
+        BigDecimal consultationFee;
+        try {
+            consultationFee = new BigDecimal(feeText);
+        } catch (NumberFormatException e) {
+            showAlert(Alert.AlertType.WARNING, "Invalid fee", "Consultation fee must be a number, e.g. 2500.00.");
             return;
         }
 
@@ -150,8 +165,8 @@ public class DentistRegisterView {
         try {
             Dentist result = isUpdate
                     ? dentistController.update(editingDentist.getDentistId(), name, specialization, contactNumber,
-                            treatmentIds)
-                    : dentistController.register(name, specialization, contactNumber, treatmentIds);
+                            consultationFee, treatmentIds)
+                    : dentistController.register(name, specialization, contactNumber, consultationFee, treatmentIds);
 
             fetchDentists();
             closeForm();
@@ -177,6 +192,7 @@ public class DentistRegisterView {
         nameField.clear();
         specializationField.clear();
         contactNumberField.clear();
+        consultationFeeField.clear();
         treatmentsList.getSelectionModel().clearSelection();
     }
 

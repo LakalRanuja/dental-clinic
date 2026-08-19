@@ -3,6 +3,7 @@ package com.mycompany.dental.clinic.dao;
 import com.mycompany.dental.clinic.db.DBConnection;
 import com.mycompany.dental.clinic.model.Dentist;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,8 +14,8 @@ import java.util.List;
 
 public class DentistDao {
 
-    public int insert(String name, String specialization, String contactNumber) {
-        String sql = "INSERT INTO dentists (name, specialization, contact_no) VALUES (?, ?, ?)";
+    public int insert(String name, String specialization, String contactNumber, BigDecimal consultationFee) {
+        String sql = "INSERT INTO dentists (name, specialization, contact_no, consultation_fee) VALUES (?, ?, ?, ?)";
 
         try (Connection connection = DBConnection.getInstance().getConnection();
                 PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -22,6 +23,7 @@ public class DentistDao {
             statement.setString(1, name);
             statement.setString(2, specialization);
             statement.setString(3, contactNumber);
+            statement.setBigDecimal(4, consultationFee);
             statement.executeUpdate();
 
             try (ResultSet keys = statement.getGeneratedKeys()) {
@@ -34,7 +36,8 @@ public class DentistDao {
     }
 
     public List<Dentist> findAll() {
-        String sql = "SELECT dentist_id, name, specialization, contact_no FROM dentists ORDER BY name";
+        String sql = "SELECT dentist_id, name, specialization, contact_no, consultation_fee "
+                + "FROM dentists ORDER BY name";
 
         List<Dentist> dentists = new ArrayList<>();
 
@@ -47,7 +50,8 @@ public class DentistDao {
                         rs.getInt("dentist_id"),
                         rs.getString("name"),
                         rs.getString("specialization"),
-                        rs.getString("contact_no")
+                        rs.getString("contact_no"),
+                        rs.getBigDecimal("consultation_fee")
                 ));
             }
         } catch (SQLException e) {
@@ -57,8 +61,10 @@ public class DentistDao {
         return dentists;
     }
 
-    public void update(int dentistId, String name, String specialization, String contactNumber) {
-        String sql = "UPDATE dentists SET name = ?, specialization = ?, contact_no = ? WHERE dentist_id = ?";
+    public void update(int dentistId, String name, String specialization, String contactNumber,
+            BigDecimal consultationFee) {
+        String sql = "UPDATE dentists SET name = ?, specialization = ?, contact_no = ?, consultation_fee = ? "
+                + "WHERE dentist_id = ?";
 
         try (Connection connection = DBConnection.getInstance().getConnection();
                 PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -66,7 +72,8 @@ public class DentistDao {
             statement.setString(1, name);
             statement.setString(2, specialization);
             statement.setString(3, contactNumber);
-            statement.setInt(4, dentistId);
+            statement.setBigDecimal(4, consultationFee);
+            statement.setInt(5, dentistId);
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to update dentist", e);
@@ -127,7 +134,7 @@ public class DentistDao {
      * query returns the first 10 matching dentists for that treatment.
      */
     public List<Dentist> searchByNameAndTreatment(String query, int treatmentId) {
-        String sql = "SELECT d.dentist_id, d.name, d.specialization, d.contact_no "
+        String sql = "SELECT d.dentist_id, d.name, d.specialization, d.contact_no, d.consultation_fee "
                 + "FROM dentists d "
                 + "JOIN dentist_treatment_types dtt ON d.dentist_id = dtt.dentist_id "
                 + "WHERE dtt.treatment_id = ? AND d.name LIKE ? "
@@ -147,7 +154,8 @@ public class DentistDao {
                             rs.getInt("dentist_id"),
                             rs.getString("name"),
                             rs.getString("specialization"),
-                            rs.getString("contact_no")
+                            rs.getString("contact_no"),
+                            rs.getBigDecimal("consultation_fee")
                     ));
                 }
             }
