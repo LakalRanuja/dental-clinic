@@ -2,6 +2,7 @@ package com.mycompany.dental.clinic.view;
 
 import com.mycompany.dental.clinic.controller.AppoinmentController;
 import com.mycompany.dental.clinic.controller.DashboardController;
+import com.mycompany.dental.clinic.dto.AppointmentDetails;
 import com.mycompany.dental.clinic.dto.AppointmentSummary;
 import com.mycompany.dental.clinic.dto.DashboardStats;
 import com.mycompany.dental.clinic.model.User;
@@ -13,6 +14,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 
@@ -46,6 +49,8 @@ public class DashboardView {
     @FXML
     private TableView<AppointmentSummary> appointmentsTable;
     @FXML
+    private TableColumn<AppointmentSummary, String> paymentStatusColumn;
+    @FXML
     private Button registerAppointmentButton;
     @FXML
     private Button searchAppointmentButton;
@@ -77,6 +82,48 @@ public class DashboardView {
     @FXML
     private void initialize() {
         appointmentsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        setUpPaymentStatusColumn();
+    }
+
+    /** "Paid" rows show plain text; "Pending" rows show a button that opens the payment screen. */
+    private void setUpPaymentStatusColumn() {
+        paymentStatusColumn.setCellFactory(column -> new TableCell<>() {
+            private final Button payButton = new Button("Pending");
+
+            {
+                payButton.setStyle("-fx-background-color: #ea580c; -fx-text-fill: white; -fx-background-radius: 6;");
+                payButton.setOnAction(event -> {
+                    AppointmentSummary summary = getTableView().getItems().get(getIndex());
+                    handlePayNow(summary);
+                });
+            }
+
+            @Override
+            protected void updateItem(String paymentStatus, boolean empty) {
+                super.updateItem(paymentStatus, empty);
+                if (empty || paymentStatus == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else if ("Pending".equalsIgnoreCase(paymentStatus)) {
+                    setGraphic(payButton);
+                    setText(null);
+                } else {
+                    setGraphic(null);
+                    setText(paymentStatus);
+                }
+            }
+        });
+    }
+
+    private void handlePayNow(AppointmentSummary summary) {
+        try {
+            AppointmentDetails details = appointmentController.findByAppointmentNumber(summary.getAppointmentNumber());
+            PaymentRegisterView.open(new Stage(), details, this::fetchAppointments);
+        } catch (IOException e) {
+            new Alert(Alert.AlertType.ERROR, "Could not open the payment screen.").showAndWait();
+        } catch (RuntimeException e) {
+            new Alert(Alert.AlertType.ERROR, "Could not load this appointment's details.").showAndWait();
+        }
     }
 
     private void populate() {

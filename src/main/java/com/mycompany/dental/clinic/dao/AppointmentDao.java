@@ -62,7 +62,7 @@ public class AppointmentDao {
     public AppointmentDetails findByAppointmentNo(int appointmentNo) {
         String sql = "SELECT a.appointment_no, p.name AS patient_name, p.address, p.contact_no, "
                 + "d.name AS dentist_name, t.treatment_name, a.appointment_date, a.appointment_time, "
-                + "a.status, a.payment_status "
+                + "a.status, a.payment_status, d.consultation_fee, t.base_cost "
                 + "FROM appointments a "
                 + "JOIN patients p ON a.patient_id = p.patient_id "
                 + "JOIN dentists d ON a.dentist_id = d.dentist_id "
@@ -89,7 +89,9 @@ public class AppointmentDao {
                         rs.getDate("appointment_date").toLocalDate(),
                         rs.getTime("appointment_time").toLocalTime(),
                         rs.getString("status"),
-                        rs.getString("payment_status")
+                        rs.getString("payment_status"),
+                        rs.getBigDecimal("consultation_fee"),
+                        rs.getBigDecimal("base_cost")
                 );
             }
         } catch (SQLException e) {
@@ -104,7 +106,7 @@ public class AppointmentDao {
                 + "JOIN dentists d ON a.dentist_id = d.dentist_id "
                 + "JOIN treatment_types t ON a.treatment_id = t.treatment_id "
                 + "JOIN users u ON a.user_id = u.user_id "
-                + "ORDER BY a.appointment_date DESC, a.appointment_time DESC";
+                + "ORDER BY a.appointment_no ASC";
 
         List<AppointmentSummary> summaries = new ArrayList<>();
 

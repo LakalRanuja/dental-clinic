@@ -97,7 +97,7 @@
                                 prefWidth="180.0"
                                 style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: #0d9488; -fx-text-fill: white; -fx-background-radius: 8;"
                                 text="Register Dentist" />
-                        <Button onAction="#handleCancelForm" text="Cancel" />
+                        <Button onAction="#handleCancelForm" prefHeight="44.0" prefWidth="180.0" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: red; -fx-text-fill: white; -fx-background-radius: 8;" text="Cancel" />
                     </children>
                 </HBox>
             </children>

@@ -1,5 +1,6 @@
 package com.mycompany.dental.clinic.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -21,10 +22,12 @@ public class AppointmentDetails {
     private final LocalTime appointmentTime;
     private final String status;
     private final String paymentStatus;
+    private final BigDecimal consultationFee;
+    private final BigDecimal treatmentCost;
 
     public AppointmentDetails(int appointmentNo, String patientName, String address, String contactNumber,
             String dentistName, String treatmentType, LocalDate appointmentDate, LocalTime appointmentTime,
-            String status, String paymentStatus) {
+            String status, String paymentStatus, BigDecimal consultationFee, BigDecimal treatmentCost) {
         this.appointmentNo = appointmentNo;
         this.patientName = patientName;
         this.address = address;
@@ -35,6 +38,8 @@ public class AppointmentDetails {
         this.appointmentTime = appointmentTime;
         this.status = status;
         this.paymentStatus = paymentStatus;
+        this.consultationFee = consultationFee;
+        this.treatmentCost = treatmentCost;
     }
 
     public String getAppointmentNumber() {
@@ -75,6 +80,14 @@ public class AppointmentDetails {
 
     public String getPaymentStatus() {
         return paymentStatus;
+    }
+
+    public BigDecimal getConsultationFee() {
+        return consultationFee;
+    }
+
+    public BigDecimal getTreatmentCost() {
+        return treatmentCost;
     }
 
     public static String formatAppointmentNumber(int appointmentNo) {

@@ -9,10 +9,10 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefWidth="480.0" spacing="20.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.mycompany.dental.clinic.view.PaymentRegisterView">
+<VBox prefWidth="480.0" spacing="20.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.dental.clinic.view.PaymentRegisterView">
     <padding>
         <Insets bottom="28.0" left="28.0" right="28.0" top="28.0" />
     </padding>
@@ -27,33 +27,34 @@
             </columnConstraints>
             <children>
                 <Label text="Consultation Fee" GridPane.rowIndex="0" />
-                <TextField fx:id="consultationFeeField" maxWidth="Infinity" GridPane.columnIndex="1"
-                           GridPane.rowIndex="0" />
+                <TextField fx:id="consultationFeeField" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
                 <Label text="Treatment Cost" GridPane.rowIndex="1" />
-                <TextField fx:id="treatmentCostField" maxWidth="Infinity" GridPane.columnIndex="1"
-                           GridPane.rowIndex="1" />
+                <TextField fx:id="treatmentCostField" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
                 <Label text="Total Amount" GridPane.rowIndex="2" />
-                <TextField fx:id="totalAmountField" editable="false" maxWidth="Infinity"
-                           style="-fx-background-color: #f0f0f0;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <TextField fx:id="totalAmountField" editable="false" maxWidth="Infinity" style="-fx-background-color: #f0f0f0;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
                 <Label text="Payment Method" GridPane.rowIndex="3" />
-                <ComboBox fx:id="paymentMethodCombo" maxWidth="Infinity" promptText="Select a method"
-                          GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <ComboBox fx:id="paymentMethodCombo" maxWidth="Infinity" promptText="Select a method" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
                 <Label text="Bill Date" GridPane.rowIndex="4" />
-                <DatePicker fx:id="billDatePicker" maxWidth="Infinity" GridPane.columnIndex="1"
-                            GridPane.rowIndex="4" />
+                <DatePicker fx:id="billDatePicker" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             </children>
+         <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+         </rowConstraints>
         </GridPane>
 
         <HBox spacing="12.0">
             <children>
-                <Button onAction="#handleCompletePayment" prefHeight="44.0" prefWidth="200.0"
-                        style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: #0d9488; -fx-text-fill: white; -fx-background-radius: 8;"
-                        text="Complete Payment" />
-                <Button onAction="#handleClose" text="Cancel" />
+                <Button onAction="#handleClose" prefHeight="45.0" prefWidth="104.0" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: red; -fx-text-fill: white; -fx-background-radius: 8;" text="Cancel" />
+                <Button onAction="#handleCompletePayment" prefHeight="44.0" prefWidth="160.0" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: #0d9488; -fx-text-fill: white; -fx-background-radius: 8;" text="Complete Payment" />
+                <Button onAction="#handlePrintBill" prefHeight="44.0" prefWidth="140.0" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: #2563eb; -fx-text-fill: white; -fx-background-radius: 8;" text="Print Bill" />
             </children>
         </HBox>
     </children>

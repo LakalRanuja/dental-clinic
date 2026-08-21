@@ -3,6 +3,7 @@ package com.mycompany.dental.clinic.view;
 import com.mycompany.dental.clinic.controller.AppoinmentController;
 import com.mycompany.dental.clinic.controller.PaymentController;
 import com.mycompany.dental.clinic.dto.AppointmentDetails;
+import com.mycompany.dental.clinic.pdf.BillPdfGenerator;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,8 +14,11 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.awt.Desktop;
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -31,6 +35,7 @@ public class PaymentRegisterView {
 
     private Stage stage;
     private PendingAppointment pending;
+    private AppointmentDetails existingAppointment;
     private Runnable onCompleted;
 
     @FXML
@@ -48,14 +53,31 @@ public class PaymentRegisterView {
 
     public static void open(Stage stage, PendingAppointment pending, BigDecimal consultationFee,
             BigDecimal treatmentCost, Runnable onCompleted) throws IOException {
+        PaymentRegisterView controller = load(stage, "Patient: " + pending.getPatientName(), consultationFee,
+                treatmentCost, onCompleted);
+        controller.pending = pending;
+        stage.show();
+    }
+
+    /** Opens the payment screen for an appointment that already exists (e.g. a "Pending" row on the dashboard). */
+    public static void open(Stage stage, AppointmentDetails existingAppointment, Runnable onCompleted)
+            throws IOException {
+        PaymentRegisterView controller = load(stage,
+                existingAppointment.getAppointmentNumber() + " — " + existingAppointment.getPatientName(),
+                existingAppointment.getConsultationFee(), existingAppointment.getTreatmentCost(), onCompleted);
+        controller.existingAppointment = existingAppointment;
+        stage.show();
+    }
+
+    private static PaymentRegisterView load(Stage stage, String headerText, BigDecimal consultationFee,
+            BigDecimal treatmentCost, Runnable onCompleted) throws IOException {
         FXMLLoader loader = new FXMLLoader(PaymentRegisterView.class.getResource("PaymentRegisterView.fxml"));
         Parent root = loader.load();
         PaymentRegisterView controller = loader.getController();
         controller.stage = stage;
-        controller.pending = pending;
         controller.onCompleted = onCompleted;
 
-        controller.appointmentNumberLabel.setText("Patient: " + pending.getPatientName());
+        controller.appointmentNumberLabel.setText(headerText);
         controller.consultationFeeField.setText(consultationFee == null ? "0.00" : consultationFee.toPlainString());
         controller.treatmentCostField.setText(treatmentCost == null ? "0.00" : treatmentCost.toPlainString());
         controller.recomputeTotal();
@@ -63,7 +85,7 @@ public class PaymentRegisterView {
 
         stage.setTitle("Dental Clinic - Make Payment");
         stage.setScene(new Scene(root));
-        stage.show();
+        return controller;
     }
 
     @FXML
@@ -116,14 +138,21 @@ public class PaymentRegisterView {
         BigDecimal totalAmount = consultationFee.add(treatmentCost);
 
         try {
-            // Only now does the appointment actually get created — this is the "Complete Payment" moment.
-            AppointmentDetails createdAppointment = appointmentController.register(
-                    pending.getPatientName(), pending.getAddress(), pending.getContactNumber(),
-                    pending.getDentistId(), pending.getTreatmentId(),
-                    pending.getAppointmentDate(), pending.getAppointmentTime(),
-                    pending.getUserId(), pending.getStatus()
-            );
-            int appointmentNo = AppointmentDetails.parseAppointmentNumber(createdAppointment.getAppointmentNumber());
+            AppointmentDetails billSource;
+
+            if (pending != null) {
+                // Only now does the appointment actually get created — this is the "Complete Payment" moment.
+                billSource = appointmentController.register(
+                        pending.getPatientName(), pending.getAddress(), pending.getContactNumber(),
+                        pending.getDentistId(), pending.getTreatmentId(),
+                        pending.getAppointmentDate(), pending.getAppointmentTime(),
+                        pending.getUserId(), pending.getStatus()
+                );
+            } else {
+                // The appointment already exists (e.g. an "Arrived" row still marked Pending) — just settle it.
+                billSource = existingAppointment;
+            }
+            int appointmentNo = AppointmentDetails.parseAppointmentNumber(billSource.getAppointmentNumber());
 
             paymentController.register(appointmentNo, consultationFee, treatmentCost, totalAmount, paymentMethod,
                     billDatePicker.getValue());
@@ -133,10 +162,77 @@ public class PaymentRegisterView {
             }
 
             showAlert(Alert.AlertType.INFORMATION, "Payment Completed",
-                    "Appointment " + createdAppointment.getAppointmentNumber() + " created and payment recorded.");
+                    "Appointment " + billSource.getAppointmentNumber() + " payment recorded.");
             stage.close();
         } catch (RuntimeException e) {
             showAlert(Alert.AlertType.ERROR, "Failed to complete payment", "Check the details and try again.");
+        }
+    }
+
+    /** Generates and opens the bill as a PDF on demand — only runs when the user clicks "Print Bill". */
+    @FXML
+    private void handlePrintBill() {
+        BigDecimal consultationFee;
+        BigDecimal treatmentCost;
+        try {
+            consultationFee = new BigDecimal(consultationFeeField.getText().trim());
+            treatmentCost = new BigDecimal(treatmentCostField.getText().trim());
+        } catch (NumberFormatException e) {
+            showAlert(Alert.AlertType.WARNING, "Invalid amount", "Consultation fee and treatment cost must be numbers.");
+            return;
+        }
+        BigDecimal totalAmount = consultationFee.add(treatmentCost);
+        String paymentMethod = paymentMethodCombo.getValue();
+        String billDate = billDatePicker.getValue() == null ? "-" : billDatePicker.getValue().toString();
+
+        String appointmentNumber;
+        String patientName;
+        String contactNumber;
+        String dentistName;
+        String treatmentType;
+
+        if (existingAppointment != null) {
+            appointmentNumber = existingAppointment.getAppointmentNumber();
+            patientName = existingAppointment.getPatientName();
+            contactNumber = existingAppointment.getContactNumber();
+            dentistName = existingAppointment.getDentistName();
+            treatmentType = existingAppointment.getTreatmentType();
+        } else {
+            // Appointment isn't saved yet (still on the "Complete Payment" step of a new registration) —
+            // there's no appointment number or dentist/treatment names to show until that happens.
+            appointmentNumber = existingAppointment.getAppointmentNumber();
+            patientName = existingAppointment.getPatientName();
+            contactNumber = existingAppointment.getContactNumber();
+            dentistName = existingAppointment.getDentistName();
+            treatmentType = existingAppointment.getTreatmentType();
+        }
+
+        saveAndOpenBill(appointmentNumber, patientName, contactNumber, dentistName, treatmentType,
+                consultationFee, treatmentCost, totalAmount, paymentMethod == null ? "-" : paymentMethod, billDate);
+    }
+
+    /**
+     * Lets the user pick where to save the bill, generates it as a PDF, then opens it in the OS's default
+     * PDF viewer (from where it can be printed).
+     */
+    private void saveAndOpenBill(String appointmentNumber, String patientName, String contactNumber,
+            String dentistName, String treatmentType, BigDecimal consultationFee, BigDecimal treatmentCost,
+            BigDecimal totalAmount, String paymentMethod, String billDate) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Bill As");
+        fileChooser.setInitialFileName("Bill_" + appointmentNumber.replace(" ", "") + ".pdf");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF files", "*.pdf"));
+        File file = fileChooser.showSaveDialog(stage);
+        if (file == null) {
+            return;
+        }
+
+        try {
+            BillPdfGenerator.generate(file, appointmentNumber, patientName, contactNumber, dentistName,
+                    treatmentType, consultationFee, treatmentCost, totalAmount, paymentMethod, billDate);
+            Desktop.getDesktop().open(file);
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.WARNING, "Bill not created", "The PDF bill could not be created.");
         }
     }
 

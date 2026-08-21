@@ -158,7 +158,7 @@
                                         <PropertyValueFactory property="status" />
                                     </cellValueFactory>
                                 </TableColumn>
-                                <TableColumn text="Payment Status">
+                                <TableColumn fx:id="paymentStatusColumn" text="Payment Status">
                                     <cellValueFactory>
                                         <PropertyValueFactory property="paymentStatus" />
                                     </cellValueFactory>
